@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en" data-cyberprints-callback="1">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'none'; form-action 'none'; connect-src 'none'; script-src 'sha256-6ThvtM/Lwb3PqZTJXUFWVIJ00sfvvJRKAVKSDv/+yCU='; style-src 'sha256-b3gewP0rfB6MHIUNhetxZujhISD1afkLJfBM17HTBMw='">
+  <title>Connect Etsy | CyberPrintsStudio</title>
+  <style>
+    :root { color-scheme: light; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; color: #342d38; background: #f8f5f9; }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 48px 20px; }
+    main { max-width: 650px; margin: 3vh auto; padding: 42px; background: #fff; border: 1px solid #e5dce8; border-radius: 20px; box-shadow: 0 12px 38px #522c5009; }
+    .brand { color: #653761; font-family: Georgia, serif; font-size: 27px; margin: 0 0 35px; }
+    .eyebrow { color: #817184; font-size: 12px; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; }
+    h1 { color: #522c50; font-size: clamp(25px, 5vw, 32px); line-height: 1.2; margin: 12px 0 18px; }
+    p, li { line-height: 1.65; font-size: 16px; }
+    ol { padding-left: 23px; }
+    li { padding: 4px 0; }
+    button { display: block; width: 100%; border: 0; border-radius: 9px; background: #60365d; color: white; padding: 15px 18px; margin: 24px 0 12px; font: inherit; font-weight: 650; cursor: pointer; }
+    button:focus-visible, textarea:focus-visible { outline: 3px solid #a775b0; outline-offset: 4px; }
+    button:disabled { opacity: .55; cursor: default; }
+    textarea { width: 100%; min-height: 104px; margin-top: 10px; padding: 12px; border: 1px solid #d9c9dd; border-radius: 8px; resize: vertical; color: #49364a; background: #fbf9fc; font: 12px/1.6 ui-monospace, monospace; overflow-wrap: anywhere; }
+    details { margin-top: 22px; }
+    summary { cursor: pointer; font-size: 14px; color: #65526a; }
+    .note { font-size: 13px; color: #776b7c; }
+    .status { min-height: 1.5em; color: #522c50; font-size: 14px; }
+    footer { border-top: 1px solid #eee6f0; margin-top: 30px; padding-top: 16px; font-size: 12px; color: #837789; line-height: 1.6; }
+    [hidden] { display: none !important; }
+    @media (max-width: 500px) { body { padding: 20px 12px; } main { padding: 28px 22px; margin-top: 0; } }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="brand">Cyber Prints Studio</p>
+    <div class="eyebrow">Shop connection</div>
+    <h1 id="heading">Etsy connection page is ready</h1>
+    <p id="description">Start the Etsy connection from the CyberPrintsStudio program on your Windows PC. This page will open after you approve access on Etsy.</p>
+    <section id="handoff" hidden>
+      <ol>
+        <li>Copy the connection response using the button below.</li>
+        <li>Return to the CyberPrintsStudio Command Prompt window.</li>
+        <li>Paste it when the program asks, then press Enter.</li>
+      </ol>
+      <button id="copy" type="button">Copy connection response</button>
+      <p id="status" class="status" role="status" aria-live="polite"></p>
+      <p class="note">Paste this only into the CyberPrintsStudio program on your PC. Do not post it in chat or add it to GitHub.</p>
+      <details id="manual">
+        <summary>Copy manually if the button does not work</summary>
+        <label class="note" for="response">Select this response and copy it:</label>
+        <textarea id="response" readonly spellcheck="false" autocomplete="off" autocapitalize="off" aria-label="Temporary Etsy connection response"></textarea>
+      </details>
+      <p class="note">The connection is finished only when the Windows program reports ETSY CONNECTED. You can then close this tab.</p>
+    </section>
+    <noscript><p>Enable JavaScript for the connection button. If Etsy has already returned here, paste the full address from your browser into the waiting Windows program instead.</p></noscript>
+    <footer>This page helps connect your own Etsy shop. It does not create or publish listings.</footer>
+  </main>
+  <script>
+    (() => {
+      'use strict';
+      const callback = 'https://cyberprints2023.github.io/etsy-callback.html';
+      const parameters = new URLSearchParams(window.location.search);
+      const heading = document.getElementById('heading');
+      const description = document.getElementById('description');
+      const handoff = document.getElementById('handoff');
+      const copyButton = document.getElementById('copy');
+      const responseField = document.getElementById('response');
+      const status = document.getElementById('status');
+      // Remove the one-time response from the address bar/history before any interaction.
+      // This page has no external resources, analytics, forms, storage or network calls.
+      try { window.history.replaceState(null, '', window.location.pathname); } catch (_) {}
+      const stop = (title, message) => {
+        heading.textContent = title;
+        description.textContent = message;
+        handoff.hidden = true;
+        responseField.value = '';
+      };
+      if (!parameters.toString()) return;
+      if (window.location.origin !== 'https://cyberprints2023.github.io' || window.location.pathname !== '/etsy-callback.html') {
+        stop('Open the hosted connection page', 'Run the connection program again and use the page Etsy opens on your CyberPrintsStudio website.');
+        return;
+      }
+      if (parameters.has('error')) {
+        stop('The Etsy connection was not completed', 'Return to the Windows program. Cancel that attempt and start the connection again when you are ready.');
+        return;
+      }
+      const code = parameters.get('code') || '';
+      const state = parameters.get('state') || '';
+      if (parameters.getAll('code').length !== 1 || parameters.getAll('state').length !== 1 ||
+          !/^[A-Za-z0-9._~-]{10,2048}$/.test(code) || !/^[A-Za-z0-9._~-]{16,256}$/.test(state)) {
+        stop('This connection response is incomplete', 'Return to the Windows program and start a fresh Etsy connection.');
+        return;
+      }
+      const url = new URL(callback);
+      url.searchParams.set('code', code);
+      url.searchParams.set('state', state);
+      const response = url.toString();
+      responseField.value = response;
+      heading.textContent = 'Finish connecting Etsy';
+      description.textContent = 'Return this temporary response to the program on your PC so it can complete and verify the connection.';
+      handoff.hidden = false;
+      copyButton.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(response);
+          status.textContent = 'Copied. Paste it into the waiting Windows program.';
+        } catch (_) {
+          document.getElementById('manual').open = true;
+          responseField.focus();
+          responseField.select();
+          status.textContent = 'Press Ctrl+C to copy the selected response, then paste it into the Windows program.';
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
